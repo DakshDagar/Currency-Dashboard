@@ -8,7 +8,7 @@ services:
   - type: web
     name: currency-dashboard-api
     runtime: python
-    buildCommand: "./build.sh"
+    buildCommand: "chmod +x ./build.sh && ./build.sh"
     startCommand: "gunicorn dashboard_project.wsgi:application"
     envVars:
       - key: DATABASE_URL
@@ -21,3 +21,5 @@ services:
         value: False
       - key: PYTHON_VERSION
         value: 3.13.0
+      - key: NODE_VERSION
+        value: 18
