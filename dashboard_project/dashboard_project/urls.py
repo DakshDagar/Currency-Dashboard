@@ -16,10 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-from .views import serve_react
+from .views import serve_react, sync_data
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('currency_api.urls')),
-    re_path(r'^(?!api/).*$', serve_react),  # Catch all non-API routes and serve React app
+    path('sync-data/', sync_data, name='sync_data'),  # Manual data sync endpoint
+    re_path(r'^(?!api/|sync-data/).*$', serve_react),  # Catch all non-API routes and serve React app
 ]

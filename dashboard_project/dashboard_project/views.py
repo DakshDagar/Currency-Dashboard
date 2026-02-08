@@ -1,5 +1,6 @@
 from django.http import FileResponse, HttpResponse
 from django.conf import settings
+from django.core.management import call_command
 import os
 
 def serve_react(request):
@@ -18,3 +19,11 @@ def serve_react(request):
         f"Exists: {os.path.exists(index_path)}",
         status=404
     )
+
+def sync_data(request):
+    """Manually trigger data sync"""
+    try:
+        call_command('sync_exchange_rates')
+        return HttpResponse("Data sync completed successfully!", status=200)
+    except Exception as e:
+        return HttpResponse(f"Data sync failed: {str(e)}", status=500)
