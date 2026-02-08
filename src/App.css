@@ -1,0 +1,252 @@
+/* ===============================
+   GLOBAL RESET
+================================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1425 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===============================
+   HEADER
+================================= */
+.app-header {
+  background: linear-gradient(135deg, rgba(15, 20, 40, 0.98), rgba(26, 31, 58, 0.98));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: 25px 40px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.logo {
+  height: 50px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: translateY(-4px);
+}
+
+.main-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #b0b0c0;
+}
+
+/* ===============================
+   MAIN CONTENT
+================================= */
+.main-content {
+  flex: 1;
+  padding: 50px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* ===============================
+   SECTIONS
+================================= */
+.chart-section,
+.table-section {
+  background: linear-gradient(135deg, rgba(26, 31, 58, 0.95), rgba(20, 25, 45, 0.95));
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  transition: all 0.3s ease;
+}
+
+.chart-section:hover,
+.table-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 80px rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.section-header {
+  margin-bottom: 30px;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.15);
+  padding-bottom: 20px;
+}
+
+.section-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* ===============================
+   CHART
+================================= */
+.chart-container {
+  padding: 30px;
+  border-radius: 15px;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.chart-container .chart-canvas {
+  height: 500px;
+  width: 100%;
+}
+
+/* ===============================
+   CURRENCY BUTTONS
+================================= */
+.currency-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.currency-button {
+  background: rgba(20, 25, 45, 0.6);
+  color: #dfe9ff;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.currency-button:hover {
+  transform: translateY(-2px);
+}
+
+.currency-button.active {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  color: #ffffff;
+}
+
+/* ===============================
+   AG GRID DARK THEME (CLEAN WAY)
+================================= */
+
+.ag-theme-alpine {
+  --ag-background-color: transparent;
+  --ag-foreground-color: #e6eef8;
+
+  --ag-header-background-color: #4a5bb5;
+  --ag-header-foreground-color: #ffffff;
+
+  --ag-row-hover-color: rgba(102, 126, 234, 0.15);
+  --ag-odd-row-background-color: rgba(102, 126, 234, 0.06);
+  --ag-even-row-background-color: rgba(102, 126, 234, 0.10);
+
+  --ag-border-color: rgba(102, 126, 234, 0.15);
+
+  --ag-font-size: 14px;
+  --ag-font-family: 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Make header text bold */
+.ag-theme-alpine .ag-header-cell-label {
+  font-weight: 600;
+}
+
+/* Pagination panel */
+.ag-theme-alpine .ag-paging-panel {
+  background: rgba(15, 20, 40, 0.6);
+  color: #d1d9ea;
+  border-top: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+/* Page size dropdown fix */
+.ag-theme-alpine .ag-paging-panel select {
+  background: rgba(26, 31, 58, 0.95) !important;
+  color: #ffffff !important;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-weight: 600;
+  border: 1px solid rgba(102, 126, 234, 0.4);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.ag-theme-alpine .ag-paging-panel select option {
+  background: #1a1f3a;
+  color: #ffffff;
+}
+
+/* Ensure dropdown arrow area is visible */
+.ag-theme-alpine .ag-paging-panel .ag-paging-page-size {
+  color: #ffffff !important;
+}
+
+
+/* ===============================
+   RESPONSIVE
+================================= */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 40px 30px;
+  }
+
+  .chart-section,
+  .table-section {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 15px 20px;
+  }
+
+  .main-title {
+    font-size: 22px;
+  }
+
+  .main-content {
+    padding: 30px 15px;
+  }
+
+  .chart-section,
+  .table-section {
+    padding: 20px;
+  }
+
+  .ag-theme-alpine {
+    height: 400px !important;
+  }
+}
