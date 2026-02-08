@@ -51,6 +51,32 @@ def health_check(request):
             status=500
         )
 
+def run_migrations(request):
+    """Manually run database migrations - one-time setup endpoint"""
+    try:
+        from io import StringIO
+        import sys
+        
+        # Capture migration output
+        output = StringIO()
+        call_command('migrate', '--noinput', stdout=output, stderr=output)
+        migration_output = output.getvalue()
+        
+        return HttpResponse(
+            f"✅ Migrations completed!<br><br>"
+            f"<pre>{migration_output}</pre><br>"
+            f"<a href='/health/'>Check Health Status</a> | "
+            f"<a href='/sync-data/'>Sync Exchange Rate Data</a>",
+            status=200
+        )
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        return HttpResponse(
+            f"❌ Migration failed:<br><pre>{error_details}</pre>",
+            status=500
+        )
+
 def sync_data(request):
     """Manually trigger data sync"""
     try:
