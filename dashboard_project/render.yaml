@@ -8,6 +8,7 @@ services:
   - type: web
     name: currency-dashboard-api
     runtime: python
+    rootDirectory: ./dashboard_project
     buildCommand: "chmod +x ./build.sh && ./build.sh"
     startCommand: "gunicorn dashboard_project.wsgi:application"
     envVars:
