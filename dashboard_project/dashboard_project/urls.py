@@ -15,11 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from .views import redirect_to_api  # Import the redirection view
+from django.urls import path, include, re_path
+from .views import serve_react
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('currency_api.urls')),  # Include your app's URLs
-    path('', redirect_to_api),  # Redirect root URL to the API endpoint
+    path('api/', include('currency_api.urls')),
+    re_path(r'^(?!api/).*$', serve_react),  # Catch all non-API routes and serve React app
 ]
