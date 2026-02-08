@@ -23,7 +23,14 @@ def serve_react(request):
 def sync_data(request):
     """Manually trigger data sync"""
     try:
+        from django.db import connection
+        # Test database connection first
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        
         call_command('sync_exchange_rates')
         return HttpResponse("Data sync completed successfully!", status=200)
     except Exception as e:
-        return HttpResponse(f"Data sync failed: {str(e)}", status=500)
+        import traceback
+        error_details = traceback.format_exc()
+        return HttpResponse(f"Data sync failed:<br><pre>{error_details}</pre>", status=500)
