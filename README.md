@@ -33,7 +33,10 @@
 
 ## 🎯 Overview
 
-The **Currency Exchange Rates Dashboard** is a comprehensive full-stack application that provides real-time visualization and analysis of historical currency exchange rates. The application fetches data from the Frankfurter API, stores it in a local database, and presents it through an elegant, dark-themed interface with advanced filtering, sorting, and visualization capabilities.
+The **Currency Exchange Rates Dashboard** is a comprehensive full-stack application that provides real-time visualization and analysis of historical currency exchange rates. The application fetches data from the Frankfurter API, stores it in a PostgreSQL database, and presents it through an elegant, dark-themed interface with advanced filtering, sorting, and visualization capabilities.
+
+### Live Demo
+🔗 **[currency-dashboard-hml9.onrender.com](https://currency-dashboard-hml9.onrender.com)**
 
 ### Key Highlights
 
@@ -43,6 +46,7 @@ The **Currency Exchange Rates Dashboard** is a comprehensive full-stack applicat
 - **Modern Dark Theme**: Sleek UI with gradient effects and smooth animations
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 - **RESTful API**: Django REST Framework backend with flexible query parameters
+- **Cloud Hosted**: Deployed on Render with PostgreSQL database
 
 ---
 
@@ -97,64 +101,113 @@ The **Currency Exchange Rates Dashboard** is a comprehensive full-stack applicat
 | **Django** | 5.0+ - Web framework |
 | **Django REST Framework** | RESTful API development |
 | **Django CORS Headers** | Cross-origin resource sharing |
-| **SQLite** | Embedded database |
-| **Requests** | HTTP library for API calls |
+| **PostgreSQL** | Cloud database on Render |
+| **psycopg3** | PostgreSQL adapter for Python |
+| **dj-database-url** | Database URL parsing |
+| **Gunicorn** | WSGI application server |
+| **Whitenoise** | Static file serving |
+| **Requests** | HTTP library for API calls
 
-### External APIs
-- **Frankfurter API**: Free, open-source currency exchange rates API
+### Deployment
+| Service | Purpose |
+|---------|---------|
+| **Render** | Cloud platform for hosting Django + React app |
+| **PostgreSQL (Render)** | Managed PostgreSQL database |
 
 ---
 
 ## 🏗 Architecture
 
+### Unified Render Deployment
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     React Frontend                           │
-│  ┌─────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │   App.js    │──│ExchangeRate │  │ExchangeRate │       │
-│  │ (Main Shell)│  │Chart.js     │  │Table.js     │       │
-│  │             │  │ (Viz Layer)  │  │ (Data Grid) │       │
-│  └─────────────┘  └──────────────┘  └──────────────┘       │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                    HTTP Requests (Fetch API)
-                            │
-┌─────────────────────────────────────────────────────────────┐
-│                   Django Backend (REST API)                  │
+│                   Render Web Service                         │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
 │  ┌──────────────────────────────────────────────────────┐   │
-│  │            currency_api App                           │   │
-│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐     │   │
-│  │  │  views.py  │  │ models.py  │  │serializers │     │   │
-│  │  │ (API Logic)│  │ (DB Schema)│  │   .py      │     │   │
-│  │  └────────────┘  └────────────┘  └────────────┘     │   │
+│  │           Django Backend (Python 3.13)               │   │
+│  │      Serves React App + RESTful API                  │   │
+│  │                                                       │   │
+│  │  ┌────────────┐  ┌──────────┐  ┌──────────────┐     │   │
+│  │  │ React App  │  │ Currency │  │Sync Endpoint │     │   │
+│  │  │(Built JS)  │  │  API     │  │(Data Fetch)  │     │   │
+│  │  └────────────┘  └──────────┘  └──────────────┘     │   │
+│  │                                                       │   │
+│  │  Components:                                          │   │
+│  │  • ExchangeRateChart.js (Chart.js visualization)    │   │
+│  │  • ExchangeRateTable.js (AG Grid data table)        │   │
+│  │                                                       │   │
 │  └──────────────────────────────────────────────────────┘   │
+│                                                               │
 └─────────────────────────────────────────────────────────────┘
                             │
-                      SQLite Database
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│         PostgreSQL Database (Render Managed)                 │
+│                                                               │
+│         • ExchangeRate Model (730 days of data)              │
+│         • 630+ records (CAD, USD, EUR rates)                 │
+│                                                               │
+└─────────────────────────────────────────────────────────────┘
                             │
-                    ┌──────────────┐
-                    │ExchangeRate  │
-                    │   Model      │
-                    └──────────────┘
+                            ↓
+                   ┌──────────────────┐
+                   │ Frankfurter API  │
+                   │ (Exchange Rates) │
+                   └──────────────────┘
 ```
+
+### How It Works
+
+1. **Frontend (React)** - Loaded as static files served by Django
+   - `ExchangeRateChart.js` fetches data from `/api/exchange_rates/` and displays interactive charts
+   - `ExchangeRateTable.js` displays data in a sortable, filterable AG Grid table
+
+2. **Backend (Django REST API)** - Serves both static files and API
+   - REST endpoints return JSON exchange rate data
+   - Manages PostgreSQL database with Django ORM
+   - Runs synchronization tasks to fetch latest rates from Frankfurter API
+
+3. **Database (PostgreSQL)** - Persistent data storage on Render
+   - Stores 730 days of historical exchange rate data
+   - Managed by Render for reliability and automatic backups
 
 ---
 
-## 🚀 Installation
+## 🚀 Quick Start
+
+### Using the Live Application
+
+**Access the deployed dashboard here**: 🔗 **[currency-dashboard-hml9.onrender.com](https://currency-dashboard-hml9.onrender.com)**
+
+The application is fully hosted on Render and ready to use without any local installation.
+
+### Manual Data Synchronization
+
+If you need to manually sync exchange rate data:
+
+1. Visit the health check endpoint: `/health/` to verify database connection
+2. Visit the sync endpoint: `/sync-data/` to fetch and populate data from Frankfurter API
+3. Return to the dashboard to view updated exchange rates
+
+---
+
+## 💻 Local Development (Optional)
 
 ### Prerequisites
 
 Before you begin, ensure you have the following installed:
 
-- **Python**: 3.8 or higher ([Download](https://www.python.org/downloads/))
-- **Node.js**: 14.x or higher ([Download](https://nodejs.org/))
-- **npm**: 6.x or higher (included with Node.js)
+- **Python**: 3.13 or higher ([Download](https://www.python.org/downloads/))
+- **Node.js**: 18.x or higher ([Download](https://nodejs.org/))
+- **npm**: 9.x or higher (included with Node.js)
 - **Git**: For cloning the repository
 
 ### Step 1: Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/DakshDagar/Currency-Dashboard.git
 cd Currency_Dashboard--main
 ```
 
@@ -174,40 +227,23 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-#### 2.2 Install Python Dependencies
+#### 2.4 Install Python Dependencies
 
+Navigate to the Django project:
 ```bash
-pip install django djangorestframework django-cors-headers requests
-```
-
-Or if you have a `requirements.txt`:
-```bash
+cd dashboard_project
 pip install -r requirements.txt
 ```
 
-#### 2.3 Navigate to Django Project
+#### 2.5 Configure Database (Local Development)
 
+For local development, SQLite is used by default. For production on Render, set the `DATABASE_URL` environment variable pointing to PostgreSQL.
+
+**Local SQLite setup:**
 ```bash
-cd dashboard_project
-```
-
-#### 2.4 Run Database Migrations
-
-```bash
-python manage.py makemigrations
 python manage.py migrate
-```
-
-#### 2.5 Fetch Initial Exchange Rate Data
-
-```bash
 python manage.py sync_exchange_rates
 ```
-
-This command will:
-- Connect to the Frankfurter API
-- Fetch 730 days (2 years) of historical exchange rates
-- Populate your local database
 
 #### 2.6 Start Django Development Server
 
@@ -252,44 +288,33 @@ The application will automatically open in your browser at `http://localhost:300
 
 ## 📖 Usage
 
-### Accessing the Dashboard
+### Accessing the Live Application
 
-1. Ensure both Django backend (`http://127.0.0.1:8000`) and React frontend (`http://localhost:3000`) are running
-2. Open your browser and navigate to `http://localhost:3000`
+Simply visit: 🔗 **[currency-dashboard-hml9.onrender.com](https://currency-dashboard-hml9.onrender.com)**
 
-### Using the Chart
+No installation or setup required!
 
+### Features
+
+#### Exchange Rate Chart
 - **Currency Buttons**: Click on CAD, USD, or EUR buttons to toggle currency display
 - **Multiple Selection**: Select multiple currencies to compare trends
 - **Hover Effects**: Hover over data points to see exact values
+- **730 Days of Data**: View 2 years of historical exchange rate trends
 
-### Using the Data Table
-
-#### Filtering
-1. Click on the filter icon in any column header
-2. Enter your filter criteria
-3. Press Enter or click Apply
-
-#### Sorting
-- Click on column headers to sort ascending/descending
-- Hold Shift and click multiple headers for multi-column sorting
-
-#### Pagination
-- Use the dropdown at the bottom to change page size (10, 20, 50, 100)
-- Navigate pages using the arrow buttons
-
-#### Column Management
-- Drag column headers to reorder
-- Resize columns by dragging column edges
-- All changes are automatically saved to localStorage
+#### Data Table
+- **Sorting**: Click column headers to sort data
+- **Filtering**: Built-in filters for all columns (ID, Date, Currency, Rate)
+- **Pagination**: Navigate through data with customizable page sizes
+- **Responsive**: Optimized for desktop and tablet viewing
 
 ---
 
 ## 📡 API Documentation
 
-### Base URL
+### Base URL (Production)
 ```
-http://127.0.0.1:8000/api/
+https://currency-dashboard-hml9.onrender.com/api/
 ```
 
 ### Endpoints
@@ -309,7 +334,7 @@ GET /exchange_rates/
 
 **Example Request:**
 ```bash
-GET http://127.0.0.1:8000/api/exchange_rates/?start_date=2025-01-01&end_date=2025-12-31&currencies=CAD,USD
+GET https://currency-dashboard-hml9.onrender.com/api/exchange_rates/?start_date=2025-01-01&end_date=2025-12-31&currencies=CAD,USD
 ```
 
 **Example Response:**
@@ -372,6 +397,47 @@ Currency_Dashboard--main/
 │       └── migrations/         # Database migrations
 │           ├── 0001_initial.py
 │           └── __init__.py
+## 📂 Project Structure
+
+```
+Currency_Dashboard--main/
+│
+├── dashboard_project/           # Django Backend
+│   ├── manage.py               # Django management script
+│   ├── requirements.txt        # Python dependencies
+│   ├── build.sh                # Render deployment script
+│   ├── render.yaml             # Render configuration
+│   │
+│   ├── dashboard_project/      # Main Django project
+│   │   ├── __init__.py
+│   │   ├── settings.py         # Project settings (CORS, Apps, DB, Static Files)
+│   │   ├── urls.py             # Main URL routing
+│   │   ├── views.py            # Django views + React serve + API health
+│   │   ├── wsgi.py             # WSGI config (Gunicorn)
+│   │   └── asgi.py             # ASGI config
+│   │
+│   └── currency_api/           # Django app for currency exchange API
+│       ├── models.py           # ExchangeRate model
+│       ├── views.py            # API views (DRF ViewSet)
+│       ├── serializers.py      # DRF serializers
+│       ├── urls.py             # App-level routing
+│       ├── admin.py            # Django admin config
+│       ├── apps.py             # App configuration
+│       ├── tests.py            # Unit tests
+│       │
+│       ├── management/         # Custom management commands
+│       │   └── commands/
+│       │       └── sync_exchange_rates.py  # Frankfurter API data sync
+│       │
+│       └── migrations/         # Database migrations
+│           ├── 0001_initial.py
+│           └── __init__.py
+│
+├── build/                      # React Production Build (deployed to Render)
+│   ├── index.html
+│   └── static/                 # Compiled JS and CSS
+│       ├── js/
+│       └── css/
 │
 ├── src/                        # React Frontend Source
 │   ├── App.js                  # Main application component
@@ -388,7 +454,7 @@ Currency_Dashboard--main/
 ├── public/                     # Static assets
 │   └── index.html              # HTML template
 │
-├── package.json                # Node.js dependencies
+├── package.json                # React dependencies
 ├── README.md                   # This file
 └── .gitignore                  # Git ignore rules
 ```
@@ -397,39 +463,47 @@ Currency_Dashboard--main/
 
 ## ⚙️ Configuration
 
+### Environment Variables (Production - Render)
+
+The following environment variables are automatically set in Render:
+
+```env
+DATABASE_URL=postgresql://user:password@host/dbname
+SECRET_KEY=<auto-generated>
+DEBUG=False
+PYTHON_VERSION=3.13.0
+NODE_VERSION=18
+```
+
 ### Django Settings (`dashboard_project/settings.py`)
+
+#### Database Configuration (Auto-detected from DATABASE_URL)
+```python
+import dj_database_url
+
+DATABASES = {
+    'default': dj_database_url.config(
+        conn_max_age=600,
+        conn_health_checks=True,
+        engine='django.db.backends.postgresql'
+    )
+}
+```
+
+#### Static Files Configuration (Whitenoise)
+```python
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR.parent, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR.parent, 'build', 'static')]
+WHITENOISE_AUTOREFRESH = True
+WHITENOISE_USE_FINDERS = True
+```
 
 #### CORS Configuration
 ```python
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "https://currency-dashboard-hml9.onrender.com",
 ]
-```
-
-#### Installed Apps
-```python
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'corsheaders',
-    'currency_api',
-]
-```
-
-#### Database
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 ```
 
 ### React Configuration
@@ -437,87 +511,107 @@ DATABASES = {
 #### API Base URL
 Located in `src/dashboard_components/` files:
 ```javascript
-const API_BASE_URL = 'http://127.0.0.1:8000/api/';
+const API_BASE_URL = '/api';  // Uses relative path for any domain
 ```
+
+---
+
+## 🚀 Deployment (Render)
+
+### Prerequisites
+- GitHub repository with your code pushed
+- Render account (free tier available)
+
+### Setup Steps
+
+1. **Create Render Account**
+   - Go to [render.com](https://render.com)
+   - Sign up with GitHub
+
+2. **Create PostgreSQL Database**
+   - In Render dashboard, click "New +"
+   - Select "PostgreSQL"
+   - Choose free tier (0.5 GB)
+   - Copy the Internal Database URL
+
+3. **Create Web Service**
+   - In Render dashboard, click "New +"
+   - Select "Web Service"
+   - Connect your GitHub repository
+   - Configure:
+     - **Name**: currency-dashboard (or your choice)
+     - **Root Directory**: `./dashboard_project`
+     - **Runtime**: Python 3.13
+     - **Build Command**: `chmod +x ./build.sh && ./build.sh`
+     - **Start Command**: `gunicorn dashboard_project.wsgi:application`
+
+4. **Connect Database**
+   - In Web Service environment variables, add:
+     - `DATABASE_URL`: (copy from PostgreSQL database)
+     - `SECRET_KEY`: (auto-generate)
+     - `DEBUG`: `False`
+     - `NODE_VERSION`: `18`
+
+5. **Deploy**
+   - Render automatically deploys on push to GitHub
+   - Builds React, runs migrations, syncs data
+
+### Monitoring
+
+- **Render Dashboard**: Monitor logs and deployment status
+- **Health Check**: Visit `/health/` endpoint to verify database connection
+- **API Status**: Visit `/api/exchange_rates/` to check API
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+### Production (Render)
 
-#### 1. **Port Already in Use**
+#### Issue: Static Files Not Loading
+**Solution**: 
+- Ensure `build.sh` runs during deployment
+- Check Render logs for "collectstatic" success message
+- Rebuild deployment: Render Dashboard → Web Service → Manual Deploy
 
-**Django (Port 8000):**
+#### Issue: API Returns 500 Error
+**Solution**:
+1. Check `/health/` endpoint for database connection
+2. Visit `/sync-data/` to manually populate data if needed
+3. Check Render logs for specific error messages
+
+#### Issue: Data Not Syncing
+**Solution**:
+1. Ensure Frankfurter API is accessible
+2.  Visit `/sync-data/` endpoint to manually trigger sync
+3. Check logs in Render dashboard
+
+### Local Development
+
+#### Port Already in Use
 ```bash
-# Windows
+# Kill process on port 8000 (Windows)
 netstat -ano | findstr :8000
 taskkill /PID <process_id> /F
 
-# macOS/Linux
-lsof -ti:8000 | xargs kill -9
+# Kill process on port 3000 (macOS/Linux)
+lsof -ti:3000 | xargs kill -9
 ```
 
-**React (Port 3000):**
+#### Module Not Found
 ```bash
-# Set alternative port
-set PORT=3001 && npm start  # Windows
-PORT=3001 npm start         # macOS/Linux
-```
+# Backend
+pip install -r dashboard_project/requirements.txt
 
-#### 2. **CORS Errors**
-
-Ensure `django-cors-headers` is installed and configured:
-```bash
-pip install django-cors-headers
-```
-
-Add to `settings.py`:
-```python
-MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Must be at the top
-    # ... other middleware
-]
-```
-
-#### 3. **Module Not Found Errors**
-
-**Backend:**
-```bash
-pip install django djangorestframework django-cors-headers requests
-```
-
-**Frontend:**
-```bash
+# Frontend
 npm install
+npm run build
 ```
 
-If issues persist:
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-#### 4. **Database Migration Errors**
-
-Reset migrations:
-```bash
-python manage.py migrate --run-syncdb
-```
-
-#### 5. **Empty Data in Frontend**
-
-1. Check Django server is running: `http://127.0.0.1:8000/api/exchange_rates/`
-2. Verify data exists in database:
-   ```bash
-   python manage.py shell
-   >>> from currency_api.models import ExchangeRate
-   >>> ExchangeRate.objects.count()
-   ```
-3. Run data fetch command:
-   ```bash
-   python manage.py sync_exchange_rates
-   ```
+#### Database Connection Issues
+- Verify `DATABASE_URL` is set correctly in Render environment
+- Ensure PostgreSQL database is created in Render
+- Run migrations: Visit `/run-migrations/` endpoint in production
 
 ---
 
@@ -531,12 +625,7 @@ Contributions are welcome! Here's how you can help:
    - Steps to reproduce
    - Expected vs actual behavior
    - Screenshots (if applicable)
-   - Environment details (OS, Python version, Node version)
-
-### Suggesting Features
-1. Open an issue with the `enhancement` label
-2. Describe the feature and its benefits
-3. Provide examples or mockups if possible
+   - Environment details
 
 ### Pull Requests
 1. Fork the repository
@@ -559,12 +648,13 @@ This project is open source and available under the [MIT License](LICENSE).
 - **AG Grid Community**: For the powerful data grid component
 - **Chart.js**: For beautiful and responsive charts
 - **Django & React Communities**: For excellent documentation and support
+- **Render**: For reliable cloud hosting with PostgreSQL support
 
 ---
 
 ## 📞 Support
 
-If you encounter any issues or have questions:
+If you encounter any issues:
 
 1. Check the [Troubleshooting](#-troubleshooting) section
 2. Search existing GitHub issues
