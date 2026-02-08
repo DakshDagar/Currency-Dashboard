@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
 const SUPPORTED_CURRENCIES = ['CAD', 'USD', 'EUR'];
 
 const currencyColorScheme = {
@@ -34,7 +35,7 @@ const ExchangeRateChart = () => {
     const startDateString = startDate.toISOString().slice(0, 10);
     const endDateString = endDate.toISOString().slice(0, 10);
 
-    fetch(`http://127.0.0.1:8000/api/exchange_rates/?start_date=${startDateString}&end_date=${endDateString}&currencies=CAD,USD,EUR`)
+    fetch(`${API_BASE_URL}/exchange_rates/?start_date=${startDateString}&end_date=${endDateString}&currencies=CAD,USD,EUR`)
       .then(response => response.json())
       .then(exchangeRateData => {
         // exchangeRateData: array of {date, base_currency, target_currency, rate}

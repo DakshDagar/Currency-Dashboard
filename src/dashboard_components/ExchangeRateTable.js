@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
 const ExchangeRateTable = () => {
     const [exchangeRateRecords, setExchangeRateRecords] = useState([]);
     const [savedColumnConfiguration, setSavedColumnConfiguration] = useState(null);
@@ -14,7 +14,7 @@ const ExchangeRateTable = () => {
         const startDateString = startDate.toISOString().slice(0,10);
         const endDateString = endDate.toISOString().slice(0,10);
 
-        fetch(`http://127.0.0.1:8000/api/exchange_rates/?start_date=${startDateString}&end_date=${endDateString}&currencies=CAD,USD,EUR`)
+        fetch(`${API_BASE_URL}/exchange_rates/?start_date=${startDateString}&end_date=${endDateString}&currencies=CAD,USD,EUR`)
             .then(response => response.json())
             .then(apiData => {
                 setExchangeRateRecords(apiData);
