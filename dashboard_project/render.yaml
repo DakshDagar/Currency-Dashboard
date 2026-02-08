@@ -1,0 +1,23 @@
+databases:
+  - name: currency_dashboard_db
+    databaseName: currency_dashboard
+    user: currency_dashboard
+    region: oregon
+
+services:
+  - type: web
+    name: currency-dashboard-api
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn dashboard_project.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: currency_dashboard_db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: PYTHON_VERSION
+        value: 3.13.0
