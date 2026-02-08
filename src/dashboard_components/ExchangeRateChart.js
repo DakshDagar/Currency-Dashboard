@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
+const API_BASE_URL = '/api';
 const SUPPORTED_CURRENCIES = ['CAD', 'USD', 'EUR'];
 
 const currencyColorScheme = {

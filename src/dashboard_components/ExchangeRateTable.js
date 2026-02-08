@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
+const API_BASE_URL = '/api';
 const ExchangeRateTable = () => {
     const [exchangeRateRecords, setExchangeRateRecords] = useState([]);
     const [savedColumnConfiguration, setSavedColumnConfiguration] = useState(null);
