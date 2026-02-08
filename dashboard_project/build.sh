@@ -5,6 +5,16 @@ set -o errexit
 echo "=== Current directory: $(pwd) ==="
 echo "=== DATABASE_URL is set: $(if [ -n "$DATABASE_URL" ]; then echo 'YES'; else echo 'NO'; fi) ==="
 
+# Rebuild React app (it's in parent directory since rootDirectory is dashboard_project)
+if [ -d "../src" ] && [ -f "../package.json" ]; then
+  echo "=== Building React App ==="
+  cd ..
+  npm install
+  npm run build
+  cd dashboard_project
+  echo "=== React build complete ==="
+fi
+
 # Install Python dependencies
 echo "=== Installing Python Dependencies ==="
 pip install -r requirements.txt
@@ -18,7 +28,7 @@ echo "=== Migrations complete ==="
 echo "=== Checking database tables ==="
 python manage.py showmigrations
 
-# Collect static files (includes React build from git)
+# Collect static files (includes React build)
 echo "=== Collecting Static Files ==="
 python manage.py collectstatic --no-input
 
