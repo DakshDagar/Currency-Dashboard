@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-from .views import serve_react, sync_data
+from .views import serve_react, sync_data, health_check
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('currency_api.urls')),
+    path('health/', health_check, name='health_check'),  # Health check endpoint
     path('sync-data/', sync_data, name='sync_data'),  # Manual data sync endpoint
-    re_path(r'^(?!api/|sync-data/).*$', serve_react),  # Catch all non-API routes and serve React app
+    re_path(r'^(?!api/|sync-data/|health/).*$', serve_react),  # Catch all non-API routes and serve React app
 ]

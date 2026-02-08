@@ -20,6 +20,37 @@ def serve_react(request):
         status=404
     )
 
+def health_check(request):
+    """Check database connection and app health"""
+    try:
+        from django.db import connection
+        from currency_api.models import ExchangeRate
+        
+        # Test database connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            result = cursor.fetchone()
+        
+        # Check if table exists and has data
+        count = ExchangeRate.objects.count()
+        
+        return HttpResponse(
+            f"✅ Health Check PASSED<br>"
+            f"Database: Connected<br>"
+            f"Database Type: {connection.settings_dict['ENGINE']}<br>"
+            f"Exchange Rate Records: {count}<br>"
+            f"DEBUG: {settings.DEBUG}<br>",
+            status=200
+        )
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        return HttpResponse(
+            f"❌ Health Check FAILED<br>"
+            f"<pre>{error_details}</pre>",
+            status=500
+        )
+
 def sync_data(request):
     """Manually trigger data sync"""
     try:
